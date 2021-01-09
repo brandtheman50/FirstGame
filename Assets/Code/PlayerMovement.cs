@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     float nextAttackTime = 0f;
     public float attackRate = 2f;
     float turnSmoothVelocity;
+    int attack = 0;
 
     void Update()
     {
@@ -28,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("Move", false);
         }
-        if(direction.magnitude >= 0.1f)
+        if(direction.magnitude >= 0.1f && !(Input.GetButton("Fire2")))
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -36,19 +37,33 @@ public class PlayerMovement : MonoBehaviour
             controller.Move(direction * speed * Time.deltaTime);
             
         }
-        if (Time.time >= nextAttackTime)
+        if (Input.GetButton("Fire2"))
+        {
+            anim.SetBool("Defend", true);
+        }
+        else
+        {
+            anim.SetBool("Defend", false);
+        }
+        
+        if (Time.time >= nextAttackTime && !Input.GetButton("Fire2"))
         {
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetMouseButton(0))
             {
                 Attack();
                 nextAttackTime = Time.time + 1f / attackRate;
             }
         }
     }
+
+    void Defend()
+    {
+        
+    }
     void Attack()
     {
-        Debug.Log("Attack");
+        
         anim.SetTrigger("Attack");
         
     }
