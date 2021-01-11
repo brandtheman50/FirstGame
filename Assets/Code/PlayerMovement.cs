@@ -17,8 +17,8 @@ public class PlayerMovement : MonoBehaviour
     public float speed = 6f;
     public float turnSmoothTime = 0.1f;
 
-    float nextAttackTime = 0f;
-    public float attackRate = 2f;
+   
+
     float turnSmoothVelocity;
     int attack = 0;
 
@@ -57,31 +57,17 @@ public class PlayerMovement : MonoBehaviour
         {
             anim.SetBool("Defend", false);
         }
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            TakeDamage(20);
-        }
-        if (Time.time >= nextAttackTime && !Input.GetMouseButton(1))
-        {
-
-            if (Input.GetMouseButton(0))
-            {
-                Attack();
-                nextAttackTime = Time.time + 1f / attackRate;
-            }
-        }
+        
+       
     }
 
     void Defend()
     {
         
     }
-    void Attack()
-    {
-        
-        anim.SetTrigger("Attack");
-        
-    }
+
+    
+    
 
     void TakeDamage(int damage)
     {
