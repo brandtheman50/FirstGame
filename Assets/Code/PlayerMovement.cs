@@ -9,10 +9,15 @@ public class PlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
     public Animator anim;
+    public Rigidbody player;
+
+    static float horizontal;
+    static float vertical;
 
     public Health healthBar;
     public int maxHealth = 100;
     public int currentHealth;
+    public Vector3 hitDirection;
 
     public float speed = 6f;
     public float turnSmoothTime = 0.1f;
@@ -29,8 +34,8 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
+        horizontal = Input.GetAxisRaw("Horizontal");
+        vertical = Input.GetAxisRaw("Vertical");
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
         if (horizontal != 0 || vertical != 0)
         {
@@ -60,18 +65,16 @@ public class PlayerMovement : MonoBehaviour
         
        
     }
-
+    
     void Defend()
     {
-        
+
     }
 
-    
-    
-
-    void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         healthBar.SetHealth(currentHealth);
+        
     }
 }

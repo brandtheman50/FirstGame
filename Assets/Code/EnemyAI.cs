@@ -6,7 +6,10 @@ using UnityEngine.UI;
 
 public class EnemyAI : MonoBehaviour
 {
-    
+
+    public GameObject player;
+    private PlayerMovement playerScript;
+
     float lookRadius = 5f;
     Transform target;
     NavMeshAgent agent;
@@ -15,19 +18,31 @@ public class EnemyAI : MonoBehaviour
     float maxHealth = 10f;
 
     public Animator anim;
+    
+   
+
+    public float attackRate = 2f;
+    public Transform attackPoint;
+    public float attackRange = 0.5f;
+    float nextAttackTime = 0f;
+    public LayerMask playerLayer;
 
     void Start()
     {
         currentHealth = maxHealth;
         target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
+        playerScript = player.GetComponent<PlayerMovement>();
     }
 
     void Update()
     {
+        
         if (currentHealth <= 0)
         {
+            gameObject.GetComponent<NavMeshAgent>().isStopped = true;
             Death();
+            Destroy(gameObject);
         }
         float distance = Vector3.Distance(target.position, transform.position);
         if (distance <= lookRadius)
@@ -42,7 +57,43 @@ public class EnemyAI : MonoBehaviour
         {
             agent.SetDestination(transform.position);
         }
+        if (Time.time >= nextAttackTime)
+        {
+
+            if (distance <= 1f)
+            {
+                anim.SetTrigger("Attack");
+                Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, playerLayer);
+
+                foreach (Collider enemy in hitEnemies)
+                {
+                    enemy.GetComponent<PlayerMovement>().TakeDamage(5);
+
+                }
+                anim.SetTrigger("Return");
+                nextAttackTime = Time.time + 5f / attackRate;
+                
+            }
+        }
     }
+
+    void Attack()
+    {
+        
+        anim.SetTrigger("Attack");
+        if (Time.time >= nextAttackTime)
+        {
+            Collider[] hitEnemies = Physics.OverlapSphere(attackPoint.position, attackRange, playerLayer);
+
+            foreach (Collider enemy in hitEnemies)
+            {
+                enemy.GetComponent<PlayerMovement>().TakeDamage(5);
+
+            }
+        }
+
+    }
+    
 
     void FaceTarget()
     {
@@ -54,6 +105,10 @@ public class EnemyAI : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, lookRadius);
+        if (attackPoint == null)
+            return;
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 
     public void TakeDamage(int damage)
@@ -64,8 +119,9 @@ public class EnemyAI : MonoBehaviour
     }
     void Death()
     {
-        anim.Play("Die");
+        anim.SetTrigger("Die");
         
         
+
     }
 }
